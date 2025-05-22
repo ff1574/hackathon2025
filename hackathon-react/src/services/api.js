@@ -1,6 +1,6 @@
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'http://localhost:5000' 
-  : 'http://localhost:5000'; // For development, still use localhost since ports are exposed
+  : 'http://localhost:5001'; // For development, still use localhost since ports are exposed
 
 export const apiService = {
   async testConnection() {

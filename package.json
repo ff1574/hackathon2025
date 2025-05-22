@@ -8,6 +8,7 @@
     "dev:clean": "docker-compose -f docker-compose.dev.yml down -v --rmi all"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "hackathon-stack": "file:"
   }
 }

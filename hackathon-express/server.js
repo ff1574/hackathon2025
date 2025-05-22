@@ -12,7 +12,9 @@ const supabaseKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000' // frontend URL
+}));
 app.use(express.json());
 
 // Test route
