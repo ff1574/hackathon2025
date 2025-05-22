@@ -1,0 +1,13 @@
+{
+  "name": "hackathon-stack",
+  "scripts": {
+    "dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "dev:detached": "docker-compose -f docker-compose.dev.yml up --build -d",
+    "dev:logs": "docker-compose -f docker-compose.dev.yml logs -f",
+    "dev:stop": "docker-compose -f docker-compose.dev.yml down",
+    "dev:clean": "docker-compose -f docker-compose.dev.yml down -v --rmi all"
+  },
+  "dependencies": {
+    "hackathon-stack": "file:"
+  }
+}

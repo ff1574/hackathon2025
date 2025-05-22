@@ -1,0 +1,38 @@
+services:
+  backend:
+    build: 
+      context: ./hackathon-express
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+    volumes:
+      - ./hackathon-express:/app
+      - /app/node_modules
+    command: npm run dev
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./hackathon-react
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./hackathon-react:/app
+      - /app/node_modules
+    command: npm run dev
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
