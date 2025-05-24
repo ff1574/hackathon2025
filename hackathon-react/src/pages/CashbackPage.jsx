@@ -12,20 +12,20 @@ import { useApp } from "../context/AppContext";
 
 function CashbackPage({ onNavigate }) {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [cashbackData, setCashbackData] = useState({
-    accountBalance: 1247.83,
-    totalSavings: 892.45,
-    monthlyEarnings: 156.78,
-    totalEarned: 2340.67,
-    availableBalance: 187.25,
-    pendingRewards: 38.25,
-    rank: 12,
-    totalUsers: 1543,
-    streakDays: 23,
-    nextGoal: 2500,
-  });
-
-  const { addNotification } = useApp();
+  const {
+    addNotification,
+    refreshCashbackData,
+    accountBalance,
+    totalSavings,
+    monthlyEarnings,
+    totalEarned,
+    availableBalance,
+    pendingRewards,
+    rank,
+    totalUsers,
+    streakDays,
+    nextGoal,
+  } = useApp();
 
   useEffect(() => {
     // Simulate loading data
@@ -39,24 +39,6 @@ function CashbackPage({ onNavigate }) {
 
     return () => clearTimeout(timer);
   }, []);
-
-  const fetchCashbackData = async () => {
-    // TODO: Implement API call to fetch cashback data
-    console.log("Fetching cashback data...");
-
-    // Simulate API call with random data updates
-    setCashbackData((prev) => ({
-      ...prev,
-      monthlyEarnings: prev.monthlyEarnings + Math.random() * 10,
-      availableBalance: prev.availableBalance + Math.random() * 5,
-    }));
-
-    addNotification({
-      type: "info",
-      title: "Data Refreshed",
-      message: "Your cashback information has been updated.",
-    });
-  };
 
   const tabs = [
     { id: "dashboard", label: "Dashboard", icon: "📊" },
@@ -82,8 +64,19 @@ function CashbackPage({ onNavigate }) {
         return (
           <div className="space-y-6">
             <CashbackDashboard
-              data={cashbackData}
-              onRefresh={fetchCashbackData}
+              data={{
+                accountBalance,
+                totalSavings,
+                monthlyEarnings,
+                totalEarned,
+                availableBalance,
+                pendingRewards,
+                rank,
+                totalUsers,
+                streakDays,
+                nextGoal,
+              }}
+              onRefresh={refreshCashbackData}
             />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <SpendingCategories />
@@ -96,7 +89,22 @@ function CashbackPage({ onNavigate }) {
       case "transactions":
         return <RecentTransactions />;
       case "achievements":
-        return <AchievementsBadges data={cashbackData} />;
+        return (
+          <AchievementsBadges
+            data={{
+              accountBalance,
+              totalSavings,
+              monthlyEarnings,
+              totalEarned,
+              availableBalance,
+              pendingRewards,
+              rank,
+              totalUsers,
+              streakDays,
+              nextGoal,
+            }}
+          />
+        );
       default:
         return null;
     }
@@ -122,7 +130,7 @@ function CashbackPage({ onNavigate }) {
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                <span className="text-lime-500">OTP</span> Cashback Hub
+                <span className="text-lime-500">Cashback</span> Hub
               </h1>
               <p className="text-gray-600 text-lg">
                 Track, earn, and maximize your rewards

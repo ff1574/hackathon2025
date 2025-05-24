@@ -13,9 +13,11 @@ import {
   Trophy,
   Calendar,
 } from "lucide-react";
+import { useApp } from "../../context/AppContext";
 
 function CashbackDashboard({ data, onRefresh }) {
   const progressToGoal = (data.totalEarned / data.nextGoal) * 100;
+  const { addNotification } = useApp();
 
   const stats = [
     {
@@ -178,45 +180,6 @@ function CashbackDashboard({ data, onRefresh }) {
           </Card>
         </motion.div>
       </div>
-
-      {/* Quick Actions */}
-      <motion.div variants={itemVariants}>
-        <Card className="border-lime-200">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Quick Actions</span>
-              <Button
-                onClick={onRefresh}
-                variant="outline"
-                size="sm"
-                className="border-lime-300 text-lime-600 hover:bg-lime-50"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <Button className="bg-lime-500 hover:bg-lime-600 text-white">
-                Redeem Rewards
-              </Button>
-              <Button
-                variant="outline"
-                className="border-lime-300 text-lime-600 hover:bg-lime-50"
-              >
-                View Offers
-              </Button>
-              <Button variant="outline" className="border-gray-300">
-                Transaction History
-              </Button>
-              <Button variant="outline" className="border-gray-300">
-                Settings
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
     </motion.div>
   );
 }
