@@ -15,7 +15,7 @@ export default function ChatInterface() {
     const now = new Date();
     const hour = now.getHours();
     const minute = now.getMinutes();
-    const time = `${hour}:${minute}`; // Match original format
+    const time = `${hour}:${minute}`;
 
     const userMessage = {
       text: input,
@@ -60,7 +60,7 @@ export default function ChatInterface() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="flex items-center justify-center">
       <div className="w-full max-w-3xl px-4">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -91,7 +91,7 @@ export default function ChatInterface() {
           </div>
 
           {/* Messages */}
-          <CardContent className="flex-1 overflow-y-auto space-y-4 px-6 py-4 bg-gray-50">
+          <CardContent className="flex-1 overflow-y-auto space-y-4 px-6 py-4 bg-white">
             {messages.map((msg, index) => (
               <div
                 key={index}
@@ -114,7 +114,7 @@ export default function ChatInterface() {
                         ? "bg-lime-500 text-white rounded-br-md"
                         : "bg-white text-gray-800 border border-gray-200 rounded-bl-md shadow-sm"
                     }`}
-                    dangerouslySetInnerHTML={{ __html: msg.text }} // Handle HTML from backend
+                    dangerouslySetInnerHTML={{ __html: msg.text }}
                   />
                   <span
                     className={`absolute text-xs text-gray-400 mt-1 ${

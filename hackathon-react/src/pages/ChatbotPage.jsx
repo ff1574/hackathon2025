@@ -2,12 +2,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import PageLayout from "../components/PageLayout";
 import BackButton from "../components/BackButton";
-import ChatInterface from "@/components/chat/chatInterface";
+import ChatInterface from "@/components/chat/ChatInterface";
 
 function ChatbotPage({ onNavigate }) {
   return (
     <PageLayout>
-      <div className="min-h-screen p-4">
+      <div className="p-4">
         <BackButton onBack={() => onNavigate("home")} />
 
         <motion.div
