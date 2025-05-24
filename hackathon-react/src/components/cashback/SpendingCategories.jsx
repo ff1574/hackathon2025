@@ -103,7 +103,7 @@ function SpendingCategories() {
             Spending Categories
           </CardTitle>
           <p className="text-sm text-gray-600">
-            Total spent this month: ${totalSpent.toFixed(2)}
+            Total spent this month: {totalSpent.toFixed(2)}€
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -123,7 +123,7 @@ function SpendingCategories() {
                   <div>
                     <div className="font-medium text-sm">{category.name}</div>
                     <div className="text-xs text-gray-500">
-                      ${category.amount.toFixed(2)}
+                      {category.amount.toFixed(2)}€
                     </div>
                   </div>
                 </div>

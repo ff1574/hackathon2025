@@ -9,76 +9,10 @@ import {
   Filter,
   Download,
 } from "lucide-react";
+import { useApp } from "../../context/AppContext";
 
 function RecentTransactions() {
-  const transactions = [
-    {
-      id: 1,
-      store: "Starbucks",
-      logo: "☕",
-      amount: -12.5,
-      cashback: +1.0,
-      date: "2024-01-15",
-      time: "09:30 AM",
-      status: "completed",
-      category: "Food & Drink",
-    },
-    {
-      id: 2,
-      store: "Amazon",
-      logo: "📦",
-      amount: -89.99,
-      cashback: +4.5,
-      date: "2024-01-14",
-      time: "02:15 PM",
-      status: "pending",
-      category: "Shopping",
-    },
-    {
-      id: 3,
-      store: "Uber",
-      logo: "🚗",
-      amount: -25.3,
-      cashback: +3.04,
-      date: "2024-01-14",
-      time: "07:45 PM",
-      status: "completed",
-      category: "Transport",
-    },
-    {
-      id: 4,
-      store: "Target",
-      logo: "🎯",
-      amount: -156.78,
-      cashback: +6.27,
-      date: "2024-01-13",
-      time: "11:20 AM",
-      status: "completed",
-      category: "Shopping",
-    },
-    {
-      id: 5,
-      store: "McDonald's",
-      logo: "🍟",
-      amount: -8.99,
-      cashback: +0.54,
-      date: "2024-01-12",
-      time: "12:30 PM",
-      status: "completed",
-      category: "Food & Drink",
-    },
-    {
-      id: 6,
-      store: "Apple Store",
-      logo: "🍎",
-      amount: -299.0,
-      cashback: +8.97,
-      date: "2024-01-11",
-      time: "03:45 PM",
-      status: "completed",
-      category: "Electronics",
-    },
-  ];
+  const { transactions } = useApp();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -163,7 +97,7 @@ function RecentTransactions() {
 
       {/* Transactions List */}
       <div className="space-y-3">
-        {transactions.map((transaction, index) => (
+        {transactions.slice(0, 10).map((transaction, index) => (
           <motion.div
             key={transaction.id}
             variants={itemVariants}
@@ -194,13 +128,13 @@ function RecentTransactions() {
                       <div className="flex items-center gap-2">
                         <ArrowDownLeft className="w-4 h-4 text-red-500" />
                         <span className="font-semibold text-gray-900">
-                          ${Math.abs(transaction.amount).toFixed(2)}
+                          {Math.abs(transaction.amount).toFixed(2)}€
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <ArrowUpRight className="w-3 h-3 text-lime-500" />
                         <span className="text-lime-600 font-medium">
-                          +${transaction.cashback.toFixed(2)} cashback
+                          +{transaction.cashback.toFixed(2)}€ cashback
                         </span>
                       </div>
                     </div>
