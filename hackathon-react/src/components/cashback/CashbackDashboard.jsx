@@ -12,17 +12,19 @@ import {
   Zap,
   Trophy,
   Calendar,
+  CheckCircle,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 
 function CashbackDashboard({ data, onRefresh }) {
+  const { addNotification, completedGoals } = useApp();
   const progressToGoal = (data.totalEarned / data.nextGoal) * 100;
-  const { addNotification } = useApp();
+  const isGoalCompleted = progressToGoal >= 100;
 
   const stats = [
     {
       title: "Account Balance",
-      value: `$${data.accountBalance.toFixed(2)}`,
+      value: `${data.accountBalance.toFixed(2)}€`,
       icon: DollarSign,
       color: "text-green-600",
       bgColor: "bg-green-100",
@@ -31,7 +33,7 @@ function CashbackDashboard({ data, onRefresh }) {
     },
     {
       title: "Total Savings",
-      value: `$${data.totalSavings.toFixed(2)}`,
+      value: `${data.totalSavings.toFixed(2)}€`,
       icon: TrendingUp,
       color: "text-lime-600",
       bgColor: "bg-lime-100",
@@ -40,7 +42,7 @@ function CashbackDashboard({ data, onRefresh }) {
     },
     {
       title: "Monthly Earnings",
-      value: `$${data.monthlyEarnings.toFixed(2)}`,
+      value: `${data.monthlyEarnings.toFixed(2)}€`,
       icon: Calendar,
       color: "text-blue-600",
       bgColor: "bg-blue-100",
@@ -49,7 +51,7 @@ function CashbackDashboard({ data, onRefresh }) {
     },
     {
       title: "Available Rewards",
-      value: `$${data.availableBalance.toFixed(2)}`,
+      value: `${data.availableBalance.toFixed(2)}€`,
       icon: Award,
       color: "text-purple-600",
       bgColor: "bg-purple-100",
@@ -127,27 +129,74 @@ function CashbackDashboard({ data, onRefresh }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Goal Progress */}
         <motion.div variants={itemVariants}>
-          <Card className="border-lime-200">
+          <Card
+            className={`border-lime-200 ${
+              isGoalCompleted
+                ? "bg-gradient-to-br from-green-50 to-lime-50"
+                : ""
+            }`}
+          >
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Target className="w-5 h-5 text-lime-600" />
-                Goal Progress
+                {isGoalCompleted ? (
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                ) : (
+                  <Target className="w-5 h-5 text-lime-600" />
+                )}
+                {isGoalCompleted ? "Goal Completed!" : "Goal Progress"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">
-                  ${data.totalEarned.toFixed(2)} of ${data.nextGoal.toFixed(2)}
-                </span>
-                <Badge className="bg-lime-100 text-lime-800">
-                  {progressToGoal.toFixed(1)}%
-                </Badge>
-              </div>
-              <Progress value={progressToGoal} className="h-3" />
-              <p className="text-xs text-gray-500">
-                ${(data.nextGoal - data.totalEarned).toFixed(2)} left to reach
-                your goal
-              </p>
+              {isGoalCompleted ? (
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="text-center py-4"
+                >
+                  <motion.div
+                    animate={{ rotate: [0, 10, -10, 0] }}
+                    transition={{ duration: 0.5, repeat: 2 }}
+                    className="text-4xl mb-2"
+                  >
+                    🎉
+                  </motion.div>
+                  <h3 className="text-lg font-bold text-green-600 mb-2">
+                    Congratulations!
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    You've reached your goal of {data.nextGoal - 1000}€!
+                  </p>
+                  <Badge className="bg-green-100 text-green-800 px-4 py-2">
+                    ✓ Goal Achieved
+                  </Badge>
+                  <div className="mt-4 p-3 bg-white rounded-lg border border-green-200">
+                    <p className="text-sm text-gray-600">
+                      Next goal: {data.nextGoal.toFixed(2)}€
+                    </p>
+                    <Progress
+                      value={(data.totalEarned / data.nextGoal) * 100}
+                      className="h-2 mt-2"
+                    />
+                  </div>
+                </motion.div>
+              ) : (
+                <>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">
+                      {data.totalEarned.toFixed(2)}€ of{" "}
+                      {data.nextGoal.toFixed(2)}€
+                    </span>
+                    <Badge className="bg-lime-100 text-lime-800">
+                      {progressToGoal.toFixed(1)}%
+                    </Badge>
+                  </div>
+                  <Progress value={progressToGoal} className="h-3" />
+                  <p className="text-xs text-gray-500">
+                    {(data.nextGoal - data.totalEarned).toFixed(2)}€ left to
+                    reach your goal
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
         </motion.div>
@@ -176,6 +225,16 @@ function CashbackDashboard({ data, onRefresh }) {
                   {data.streakDays} day streak!
                 </span>
               </div>
+              {completedGoals.length > 0 && (
+                <div className="text-center">
+                  <Badge
+                    variant="outline"
+                    className="border-gold text-yellow-700"
+                  >
+                    🏆 {completedGoals.length} Goals Completed
+                  </Badge>
+                </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>

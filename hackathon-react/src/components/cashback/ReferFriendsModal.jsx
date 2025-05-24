@@ -69,7 +69,7 @@ function ReferFriendsModal({ isOpen, onClose }) {
 
   const shareViaEmail = () => {
     const subject = "Join me on OTP Bank and earn cashback!";
-    const body = `Hey! I've been earning amazing cashback with OTP Bank. Join using my referral code ${referralCode} and we both get $15 bonus! https://otpbank.com/join?ref=${referralCode}`;
+    const body = `Hey! I've been earning amazing cashback with OTP Bank. Join using my referral code ${referralCode} and we both get 15€ bonus! https://otpbank.com/join?ref=${referralCode}`;
     window.open(
       `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
         body
@@ -78,12 +78,12 @@ function ReferFriendsModal({ isOpen, onClose }) {
   };
 
   const shareViaSMS = () => {
-    const message = `Join me on OTP Bank! Use code ${referralCode} for $15 bonus: https://otpbank.com/join?ref=${referralCode}`;
+    const message = `Join me on OTP Bank! Use code ${referralCode} for 15€ bonus: https://otpbank.com/join?ref=${referralCode}`;
     window.open(`sms:?body=${encodeURIComponent(message)}`);
   };
 
   const shareOnSocial = () => {
-    const text = `I'm earning amazing cashback with OTP Bank! Join me and get $15 bonus with code ${referralCode}`;
+    const text = `I'm earning amazing cashback with OTP Bank! Join me and get 15€ bonus with code ${referralCode}`;
     const url = `https://otpbank.com/join?ref=${referralCode}`;
 
     if (navigator.share) {
@@ -168,7 +168,7 @@ function ReferFriendsModal({ isOpen, onClose }) {
                   Refer Friends
                 </CardTitle>
                 <p className="text-sm text-gray-600">
-                  Invite friends and earn ${referralStats.bonusPerReferral} for
+                  Invite friends and earn {referralStats.bonusPerReferral}€ for
                   each successful referral!
                 </p>
               </CardHeader>
@@ -189,7 +189,7 @@ function ReferFriendsModal({ isOpen, onClose }) {
                   <Card className="border-green-200 bg-green-50">
                     <CardContent className="p-4 text-center">
                       <div className="text-2xl font-bold text-green-600">
-                        ${referralStats.bonusEarned}
+                        {referralStats.bonusEarned}€
                       </div>
                       <div className="text-sm text-gray-600">Bonus Earned</div>
                     </CardContent>
@@ -318,8 +318,8 @@ function ReferFriendsModal({ isOpen, onClose }) {
                     </span>
                   </div>
                   <p className="text-sm text-lime-700">
-                    You and your friend both get $
-                    {referralStats.bonusPerReferral} when they make their first
+                    You and your friend both get
+                    {referralStats.bonusPerReferral}€ when they make their first
                     purchase!
                   </p>
                 </div>

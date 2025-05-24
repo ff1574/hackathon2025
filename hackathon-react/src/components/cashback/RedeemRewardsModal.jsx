@@ -60,9 +60,9 @@ function RedeemRewardsModal({ isOpen, onClose }) {
       addNotification({
         type: "error",
         title: "Invalid Amount",
-        message: `Minimum redemption amount is $${
+        message: `Minimum redemption amount is ${
           redeemMethods.find((m) => m.id === selectedMethod).minAmount
-        }`,
+        }€`,
       });
       return;
     }
@@ -90,7 +90,7 @@ function RedeemRewardsModal({ isOpen, onClose }) {
       addNotification({
         type: "success",
         title: "Redemption Successful!",
-        message: `$${amount} has been redeemed via ${
+        message: `${amount}€ has been redeemed via ${
           redeemMethods.find((m) => m.id === selectedMethod).title
         }`,
       });
@@ -151,7 +151,7 @@ function RedeemRewardsModal({ isOpen, onClose }) {
                     Available balance:
                   </span>
                   <Badge className="bg-lime-100 text-lime-800 font-bold">
-                    ${availableBalance.toFixed(2)}
+                    {availableBalance.toFixed(2)}€
                   </Badge>
                 </div>
               </CardHeader>
@@ -197,8 +197,8 @@ function RedeemRewardsModal({ isOpen, onClose }) {
                                         {method.description}
                                       </div>
                                       <div className="text-xs text-gray-500 mt-1">
-                                        Min: ${method.minAmount} • Fee: $
-                                        {method.fee} • {method.processingTime}
+                                        Min: {method.minAmount}€ • Fee:
+                                        {method.fee}€ • {method.processingTime}
                                       </div>
                                     </div>
                                     {selectedMethod === method.id && (
@@ -241,13 +241,14 @@ function RedeemRewardsModal({ isOpen, onClose }) {
                         </div>
                         <div className="flex justify-between text-xs text-gray-500 mt-1">
                           <span>
-                            Min: $
+                            Min:
                             {
                               redeemMethods.find((m) => m.id === selectedMethod)
                                 ?.minAmount
                             }
+                            €
                           </span>
-                          <span>Max: ${availableBalance.toFixed(2)}</span>
+                          <span>Max: {availableBalance.toFixed(2)}€</span>
                         </div>
                       </div>
 
@@ -262,7 +263,7 @@ function RedeemRewardsModal({ isOpen, onClose }) {
                             disabled={quickAmount > availableBalance}
                             className="flex-1 border-lime-300 text-lime-600 hover:bg-lime-50"
                           >
-                            ${quickAmount}
+                            {quickAmount}€
                           </Button>
                         ))}
                         <Button
@@ -289,7 +290,7 @@ function RedeemRewardsModal({ isOpen, onClose }) {
                           className="flex-1 bg-lime-500 hover:bg-lime-600 text-white"
                           disabled={!amount || Number.parseFloat(amount) <= 0}
                         >
-                          Redeem ${amount || "0.00"}
+                          Redeem {amount || "0.00"}€
                         </Button>
                       </div>
                     </motion.div>
@@ -343,7 +344,7 @@ function RedeemRewardsModal({ isOpen, onClose }) {
                         Redemption Successful! 🎉
                       </h3>
                       <p className="text-sm text-gray-600">
-                        ${amount} has been redeemed via{" "}
+                        {amount}€ has been redeemed via{" "}
                         {
                           redeemMethods.find((m) => m.id === selectedMethod)
                             ?.title

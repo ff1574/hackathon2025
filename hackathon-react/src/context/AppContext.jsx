@@ -17,8 +17,11 @@ export function AppProvider({ children }) {
   const [rank, setRank] = useState(12);
   const [totalUsers] = useState(1543);
   const [streakDays, setStreakDays] = useState(23);
-  const [nextGoal] = useState(2500);
+  const [nextGoal, setNextGoal] = useState(2500);
+  const [completedGoals, setCompletedGoals] = useState([]);
   const [activatedOffers, setActivatedOffers] = useState([]);
+  const [storesVisited, setStoresVisited] = useState(8);
+  const [totalRedemptions, setTotalRedemptions] = useState(3);
   const [referralStats, setReferralStats] = useState({
     totalReferred: 8,
     bonusEarned: 120.5,
@@ -122,9 +125,39 @@ export function AppProvider({ children }) {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
+  // Check and handle goal completion
+  const checkGoalCompletion = () => {
+    if (totalEarned >= nextGoal && !completedGoals.includes(nextGoal)) {
+      setCompletedGoals((prev) => [...prev, nextGoal]);
+      setNextGoal((prev) => prev + 1000); // Set next goal
+
+      // Bonus for completing goal
+      const goalBonus = 50;
+      setAvailableBalance((prev) => prev + goalBonus);
+      setAccountBalance((prev) => prev + goalBonus);
+
+      addNotification({
+        type: "success",
+        title: "🎉 Goal Completed!",
+        message: `Congratulations! You've earned $${nextGoal}! Bonus: $${goalBonus}`,
+      });
+    }
+  };
+
   // Cashback methods
   const activateOffer = (offer) => {
     console.log("Activating offer:", offer.store);
+
+    // Check if offer is already activated
+    if (activatedOffers.find((o) => o.id === offer.id)) {
+      addNotification({
+        type: "warning",
+        title: "Offer Already Active",
+        message: `${offer.store} offer is already activated.`,
+      });
+      return false;
+    }
+
     setActivatedOffers((prev) => [
       ...prev,
       { ...offer, activatedAt: new Date().toISOString() },
@@ -134,13 +167,27 @@ export function AppProvider({ children }) {
     const bonus = 2.5;
     setAvailableBalance((prev) => prev + bonus);
     setPendingRewards((prev) => prev + bonus);
+    setTotalEarned((prev) => prev + bonus);
+
+    // Check if this is a new store
+    const uniqueStores = new Set([
+      ...activatedOffers.map((o) => o.store),
+      offer.store,
+    ]);
+    setStoresVisited(uniqueStores.size);
+
+    checkGoalCompletion();
+    return true;
   };
 
   const redeemRewards = (amount, method) => {
     console.log("Redeeming rewards:", amount, method);
     if (amount <= availableBalance) {
+      // Update balances
       setAvailableBalance((prev) => prev - amount);
-      setTotalEarned((prev) => prev + amount);
+      setAccountBalance((prev) => prev + amount); // Add to account balance
+      setTotalSavings((prev) => prev + amount); // Add to total savings
+      setTotalRedemptions((prev) => prev + 1);
 
       // Add transaction record
       const newTransaction = {
@@ -181,20 +228,29 @@ export function AppProvider({ children }) {
       }));
       setAvailableBalance((prev) => prev + 15.0);
       setPendingRewards((prev) => prev + 15.0);
+      setTotalEarned((prev) => prev + 15.0);
+
+      checkGoalCompletion();
     }, 5000); // 5 seconds delay to simulate processing
   };
 
   const refreshCashbackData = () => {
     console.log("Refreshing cashback data...");
     // Simulate small random increases
-    setMonthlyEarnings((prev) => prev + Math.random() * 10);
-    setAvailableBalance((prev) => prev + Math.random() * 5);
+    const monthlyIncrease = Math.random() * 10;
+    const balanceIncrease = Math.random() * 5;
+
+    setMonthlyEarnings((prev) => prev + monthlyIncrease);
+    setAvailableBalance((prev) => prev + balanceIncrease);
+    setTotalEarned((prev) => prev + balanceIncrease);
     setStreakDays((prev) => prev + 1);
 
     // Potentially improve rank
     if (Math.random() > 0.7) {
       setRank((prev) => Math.max(1, prev - 1));
     }
+
+    checkGoalCompletion();
   };
 
   const addTransaction = (transaction) => {
@@ -214,7 +270,13 @@ export function AppProvider({ children }) {
       setAvailableBalance((prev) => prev + transaction.cashback);
       setMonthlyEarnings((prev) => prev + transaction.cashback);
       setTotalEarned((prev) => prev + transaction.cashback);
+
+      checkGoalCompletion();
     }
+  };
+
+  const isOfferActivated = (offerId) => {
+    return activatedOffers.some((offer) => offer.id === offerId);
   };
 
   const value = {
@@ -237,7 +299,10 @@ export function AppProvider({ children }) {
     totalUsers,
     streakDays,
     nextGoal,
+    completedGoals,
     activatedOffers,
+    storesVisited,
+    totalRedemptions,
     referralStats,
     transactions,
     // Cashback methods
@@ -246,6 +311,8 @@ export function AppProvider({ children }) {
     referFriend,
     refreshCashbackData,
     addTransaction,
+    isOfferActivated,
+    checkGoalCompletion,
     setAccountBalance,
     setTotalSavings,
     setMonthlyEarnings,

@@ -16,6 +16,7 @@ import {
   Smartphone,
   Home,
   Utensils,
+  CheckCircle,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 
@@ -24,7 +25,7 @@ function OffersSection() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [activatedOffer, setActivatedOffer] = useState(null);
   const [showActivationPopup, setShowActivationPopup] = useState(false);
-  const { activateOffer: activateOfferInContext } = useApp();
+  const { activateOffer: activateOfferInContext, isOfferActivated } = useApp();
 
   const categories = [
     { id: "all", label: "All", icon: ShoppingBag },
@@ -49,7 +50,7 @@ function OffersSection() {
       featured: false,
       color: "from-green-400 to-green-600",
       terms:
-        "Valid on all coffee purchases. Minimum spend $5. Maximum cashback $10 per transaction.",
+        "Valid on all coffee purchases. Minimum spend 5€. Maximum cashback 10€ per transaction.",
     },
     {
       id: 2,
@@ -64,7 +65,7 @@ function OffersSection() {
       featured: true,
       color: "from-orange-400 to-orange-600",
       terms:
-        "Valid on all grocery items. Minimum spend $20. Maximum cashback $25 per transaction.",
+        "Valid on all grocery items. Minimum spend 20€. Maximum cashback 25€ per transaction.",
     },
     {
       id: 3,
@@ -79,7 +80,7 @@ function OffersSection() {
       featured: false,
       color: "from-yellow-400 to-yellow-600",
       terms:
-        "Valid on all food items. Minimum spend $10. Maximum cashback $15 per transaction.",
+        "Valid on all food items. Minimum spend 10€. Maximum cashback 15€ per transaction.",
     },
     {
       id: 4,
@@ -94,7 +95,7 @@ function OffersSection() {
       featured: true,
       color: "from-indigo-400 to-indigo-600",
       terms:
-        "Valid on all books and educational materials. Minimum spend $15. No maximum limit.",
+        "Valid on all books and educational materials. Minimum spend 15€. No maximum limit.",
     },
     {
       id: 5,
@@ -109,7 +110,7 @@ function OffersSection() {
       featured: false,
       color: "from-gray-400 to-gray-600",
       terms:
-        "Valid on all repair services. Minimum spend $30. Maximum cashback $50 per service.",
+        "Valid on all repair services. Minimum spend 30€. Maximum cashback 50€ per service.",
     },
     {
       id: 6,
@@ -124,7 +125,7 @@ function OffersSection() {
       featured: true,
       color: "from-purple-400 to-purple-600",
       terms:
-        "Valid on memberships and personal training. Minimum spend $40. Maximum cashback $80 per month.",
+        "Valid on memberships and personal training. Minimum spend 40€. Maximum cashback 80€ per month.",
     },
     {
       id: 7,
@@ -139,7 +140,7 @@ function OffersSection() {
       featured: false,
       color: "from-pink-400 to-pink-600",
       terms:
-        "Valid on all bakery items. Minimum spend $8. Maximum cashback $12 per day.",
+        "Valid on all bakery items. Minimum spend 8€. Maximum cashback 12€ per day.",
     },
     {
       id: 8,
@@ -153,7 +154,7 @@ function OffersSection() {
       featured: true,
       color: "from-lime-400 to-lime-600",
       terms:
-        "Valid on all fresh produce. Minimum spend $12. Maximum cashback $20 per transaction.",
+        "Valid on all fresh produce. Minimum spend 12€. Maximum cashback 20€ per transaction.",
     },
     {
       id: 9,
@@ -168,7 +169,7 @@ function OffersSection() {
       featured: false,
       color: "from-red-500 to-red-700",
       terms:
-        "Valid on all clothing items. Minimum spend $50. Maximum cashback $100 per transaction.",
+        "Valid on all clothing items. Minimum spend 50€. Maximum cashback 100€ per transaction.",
     },
     {
       id: 10,
@@ -182,7 +183,7 @@ function OffersSection() {
       featured: true,
       color: "from-amber-400 to-amber-600",
       terms:
-        "Valid on all pet supplies and services. Minimum spend $25. Maximum cashback $30 per transaction.",
+        "Valid on all pet supplies and services. Minimum spend 25€. Maximum cashback 30€ per transaction.",
     },
   ];
 
@@ -223,14 +224,145 @@ function OffersSection() {
 
   const activateOffer = (offer) => {
     console.log("Activating offer:", offer.store);
-    activateOfferInContext(offer);
-    setActivatedOffer(offer);
-    setShowActivationPopup(true);
+    const success = activateOfferInContext(offer);
+    if (success) {
+      setActivatedOffer(offer);
+      setShowActivationPopup(true);
+    }
   };
 
   const handlePopupClose = () => {
     setShowActivationPopup(false);
     setTimeout(() => setActivatedOffer(null), 300);
+  };
+
+  const renderOfferCard = (offer, isFeatured = false) => {
+    const isActivated = isOfferActivated(offer.id);
+
+    return (
+      <motion.div
+        key={offer.id}
+        variants={itemVariants}
+        layout
+        whileHover={{
+          scale: isActivated ? 1.01 : 1.02,
+          y: isActivated ? -2 : -5,
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="group"
+      >
+        <Card
+          className={`transition-all duration-300 overflow-hidden relative ${
+            isActivated
+              ? "border-green-300 bg-green-50 shadow-md"
+              : isFeatured
+              ? "border-lime-200 hover:shadow-xl"
+              : "border-gray-200 hover:border-lime-300 hover:shadow-lg"
+          }`}
+        >
+          <div className={`h-2 bg-gradient-to-r ${offer.color}`} />
+
+          {/* Status badges */}
+          <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+            {isFeatured && !isActivated && (
+              <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">
+                ⭐ Featured
+              </Badge>
+            )}
+            {isActivated && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 400 }}
+              >
+                <Badge className="bg-green-100 text-green-800 border-green-300">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Active
+                </Badge>
+              </motion.div>
+            )}
+          </div>
+
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  className="text-2xl"
+                  whileHover={{ scale: 1.2, rotate: 10 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  {offer.logo}
+                </motion.div>
+                <div>
+                  <CardTitle className="text-lg">{offer.store}</CardTitle>
+                  <div className="flex items-center gap-1">
+                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                    <span className="text-xs text-gray-600">
+                      {offer.rating}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 400 }}
+              >
+                <Badge
+                  className={`text-lg font-bold px-3 py-1 ${
+                    isActivated
+                      ? "bg-green-100 text-green-800"
+                      : isFeatured
+                      ? "bg-lime-100 text-lime-800"
+                      : "border-lime-300 text-lime-600"
+                  }`}
+                  variant={isFeatured && !isActivated ? "default" : "outline"}
+                >
+                  {offer.cashback}
+                </Badge>
+              </motion.div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            <p className="text-sm text-gray-600">{offer.description}</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1 text-xs text-orange-600">
+                <Clock className="w-3 h-3" />
+                Expires in {offer.expires}
+              </div>
+              <motion.div
+                whileHover={{ scale: isActivated ? 1.02 : 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  onClick={() => activateOffer(offer)}
+                  disabled={isActivated}
+                  className={`transition-all duration-200 ${
+                    isActivated
+                      ? "bg-green-500 text-white cursor-default"
+                      : isFeatured
+                      ? "bg-lime-500 hover:bg-lime-600 text-white shadow-lg hover:shadow-xl"
+                      : "border-lime-300 text-lime-600 hover:bg-lime-50"
+                  }`}
+                  variant={
+                    isActivated ? "default" : isFeatured ? "default" : "outline"
+                  }
+                >
+                  {isActivated ? (
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Activated
+                    </>
+                  ) : (
+                    "Activate"
+                  )}
+                </Button>
+              </motion.div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
   };
 
   return (
@@ -289,79 +421,7 @@ function OffersSection() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <AnimatePresence>
-                {featuredOffers.map((offer, index) => (
-                  <motion.div
-                    key={offer.id}
-                    variants={itemVariants}
-                    layout
-                    whileHover={{ scale: 1.02, y: -5 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className="group"
-                  >
-                    <Card className="border-lime-200 hover:shadow-xl transition-all duration-300 overflow-hidden relative">
-                      <div className={`h-2 bg-gradient-to-r ${offer.color}`} />
-                      <div className="absolute top-4 right-4 z-10">
-                        <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">
-                          ⭐ Featured
-                        </Badge>
-                      </div>
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <motion.div
-                              className="text-2xl"
-                              whileHover={{ scale: 1.2, rotate: 10 }}
-                              transition={{ type: "spring", stiffness: 400 }}
-                            >
-                              {offer.logo}
-                            </motion.div>
-                            <div>
-                              <CardTitle className="text-lg">
-                                {offer.store}
-                              </CardTitle>
-                              <div className="flex items-center gap-1">
-                                <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                                <span className="text-xs text-gray-600">
-                                  {offer.rating}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <motion.div
-                            whileHover={{ scale: 1.1 }}
-                            transition={{ type: "spring", stiffness: 400 }}
-                          >
-                            <Badge className="bg-lime-100 text-lime-800 text-lg font-bold px-3 py-1">
-                              {offer.cashback}
-                            </Badge>
-                          </motion.div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <p className="text-sm text-gray-600">
-                          {offer.description}
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1 text-xs text-orange-600">
-                            <Clock className="w-3 h-3" />
-                            Expires in {offer.expires}
-                          </div>
-                          <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            <Button
-                              onClick={() => activateOffer(offer)}
-                              className="bg-lime-500 hover:bg-lime-600 text-white shadow-lg hover:shadow-xl transition-all duration-200"
-                            >
-                              Activate
-                            </Button>
-                          </motion.div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
+                {featuredOffers.map((offer) => renderOfferCard(offer, true))}
               </AnimatePresence>
             </div>
           </motion.div>
@@ -376,77 +436,7 @@ function OffersSection() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <AnimatePresence>
-                {regularOffers.map((offer, index) => (
-                  <motion.div
-                    key={offer.id}
-                    variants={itemVariants}
-                    layout
-                    whileHover={{ scale: 1.02, y: -3 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className="group"
-                  >
-                    <Card className="border-gray-200 hover:border-lime-300 hover:shadow-lg transition-all duration-300">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <motion.div
-                              className="text-2xl"
-                              whileHover={{ scale: 1.2, rotate: 10 }}
-                              transition={{ type: "spring", stiffness: 400 }}
-                            >
-                              {offer.logo}
-                            </motion.div>
-                            <div>
-                              <CardTitle className="text-lg">
-                                {offer.store}
-                              </CardTitle>
-                              <div className="flex items-center gap-1">
-                                <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                                <span className="text-xs text-gray-600">
-                                  {offer.rating}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <motion.div
-                            whileHover={{ scale: 1.1 }}
-                            transition={{ type: "spring", stiffness: 400 }}
-                          >
-                            <Badge
-                              variant="outline"
-                              className="border-lime-300 text-lime-600 text-lg font-bold px-3 py-1"
-                            >
-                              {offer.cashback}
-                            </Badge>
-                          </motion.div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <p className="text-sm text-gray-600">
-                          {offer.description}
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1 text-xs text-orange-600">
-                            <Clock className="w-3 h-3" />
-                            Expires in {offer.expires}
-                          </div>
-                          <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            <Button
-                              onClick={() => activateOffer(offer)}
-                              variant="outline"
-                              className="border-lime-300 text-lime-600 hover:bg-lime-50 transition-all duration-200"
-                            >
-                              Activate
-                            </Button>
-                          </motion.div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
+                {regularOffers.map((offer) => renderOfferCard(offer, false))}
               </AnimatePresence>
             </div>
           </motion.div>

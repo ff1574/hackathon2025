@@ -128,13 +128,13 @@ function RecentTransactions() {
                       <div className="flex items-center gap-2">
                         <ArrowDownLeft className="w-4 h-4 text-red-500" />
                         <span className="font-semibold text-gray-900">
-                          ${Math.abs(transaction.amount).toFixed(2)}
+                          {Math.abs(transaction.amount).toFixed(2)}€
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <ArrowUpRight className="w-3 h-3 text-lime-500" />
                         <span className="text-lime-600 font-medium">
-                          +${transaction.cashback.toFixed(2)} cashback
+                          +{transaction.cashback.toFixed(2)}€ cashback
                         </span>
                       </div>
                     </div>
