@@ -1,43 +1,60 @@
-import { useState, useEffect } from "react";
-import { apiService } from "./services/api";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Home from "./pages/Home";
+import ChatbotPage from "./pages/ChatbotPage";
+import CashbackPage from "./pages/CashbackPage";
+import { AppProvider } from "./context/AppContext";
+import ConnectionStatus from "./components/ConnectionStatus";
+import NotificationToast from "./components/NotificationToast";
 
 function App() {
-  const [backendData, setBackendData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState("home");
 
-  useEffect(() => {
-    const testConnection = async () => {
-      try {
-        const data = await apiService.testConnection();
-        setBackendData(data);
-      } catch (error) {
-        console.error("Failed to connect to backend:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const pageVariants = {
+    initial: { opacity: 0, x: 20 },
+    in: { opacity: 1, x: 0 },
+    out: { opacity: 0, x: -20 },
+  };
 
-    testConnection();
-  }, []);
+  const pageTransition = {
+    type: "tween",
+    ease: "anticipate",
+    duration: 0.3,
+  };
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case "home":
+        return <Home onNavigate={setCurrentPage} />;
+      case "chatbot":
+        return <ChatbotPage onNavigate={setCurrentPage} />;
+      case "cashback":
+        return <CashbackPage onNavigate={setCurrentPage} />;
+      default:
+        return <Home onNavigate={setCurrentPage} />;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-4">Hackathon Stack Ready!</h1>
-        {loading ? (
-          <p>Connecting to backend...</p>
-        ) : backendData ? (
-          <div>
-            <p className="text-green-600">✅ Backend Connected</p>
-            <pre className="mt-2 text-sm bg-gray-100 p-2 rounded">
-              {JSON.stringify(backendData, null, 2)}
-            </pre>
-          </div>
-        ) : (
-          <p className="text-red-600">❌ Backend Connection Failed</p>
-        )}
+    <AppProvider>
+      <div className="min-h-screen bg-white">
+        <ConnectionStatus />
+        <NotificationToast />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPage}
+            initial="initial"
+            animate="in"
+            exit="out"
+            variants={pageVariants}
+            transition={pageTransition}
+            className="min-h-screen"
+          >
+            {renderPage()}
+          </motion.div>
+        </AnimatePresence>
       </div>
-    </div>
+    </AppProvider>
   );
 }
 
