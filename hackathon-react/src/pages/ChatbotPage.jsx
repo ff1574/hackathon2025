@@ -5,36 +5,6 @@ import BackButton from "../components/BackButton";
 import ChatInterface from "@/components/chat/chatInterface";
 
 function ChatbotPage({ onNavigate }) {
-  const [messages, setMessages] = useState([]);
-  const [inputValue, setInputValue] = useState("");
-
-  const handleSendMessage = () => {
-    // TODO: Implement chatbot message sending logic
-    console.log("Sending message:", inputValue);
-    if (inputValue.trim()) {
-      setMessages((prev) => [...prev, { text: inputValue, sender: "user" }]);
-      setInputValue("");
-      // TODO: Add AI response logic here
-    }
-  };
-
-  const handleInputKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSendMessage();
-    }
-  };
-
-  const initializeChatbot = () => {
-    // TODO: Implement chatbot initialization
-    console.log("Initializing chatbot...");
-  };
-
-  const clearChat = () => {
-    // TODO: Implement chat clearing logic
-    console.log("Clearing chat...");
-    setMessages([]);
-  };
-
   return (
     <PageLayout>
       <div className="min-h-screen p-4">
@@ -46,9 +16,7 @@ function ChatbotPage({ onNavigate }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <ChatInterface/>
-
-          
+          <ChatInterface />
         </motion.div>
       </div>
     </PageLayout>
