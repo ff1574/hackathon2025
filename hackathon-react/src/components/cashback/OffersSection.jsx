@@ -12,11 +12,16 @@ import {
   Percent,
   ShoppingBag,
   Coffee,
-  Car,
   Smartphone,
-  Home,
   Utensils,
   CheckCircle,
+  ShoppingCart,
+  BookOpen,
+  Dumbbell,
+  Cookie,
+  Apple,
+  Shirt,
+  Heart,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 
@@ -31,9 +36,14 @@ function OffersSection() {
     { id: "all", label: "All", icon: ShoppingBag },
     { id: "food", label: "Food", icon: Utensils },
     { id: "coffee", label: "Coffee", icon: Coffee },
-    { id: "transport", label: "Transport", icon: Car },
+    { id: "grocery", label: "Grocery", icon: ShoppingCart },
+    { id: "books", label: "Books", icon: BookOpen },
     { id: "tech", label: "Tech", icon: Smartphone },
-    { id: "home", label: "Home", icon: Home },
+    { id: "fitness", label: "Fitness", icon: Dumbbell },
+    { id: "bakery", label: "Bakery", icon: Cookie },
+    { id: "produce", label: "Produce", icon: Apple },
+    { id: "clothing", label: "Clothing", icon: Shirt },
+    { id: "pet", label: "Pet Care", icon: Heart },
   ];
 
   const offers = [

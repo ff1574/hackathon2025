@@ -130,7 +130,7 @@ function CashbackPage({ onNavigate }) {
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                <span className="text-lime-500">Cashback</span> Hub
+                <span className="text-lime-500">OTP</span> Cashback Hub
               </h1>
               <p className="text-gray-600 text-lg">
                 Track, earn, and maximize your rewards

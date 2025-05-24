@@ -194,13 +194,17 @@ function QuickActions({ onNavigate }) {
                 <Button
                   variant="outline"
                   className="w-full border-lime-300 text-lime-600 hover:bg-lime-50 transition-all duration-200"
-                  onClick={() =>
+                  onClick={() => {
                     addNotification({
                       type: "info",
                       title: "Help Center",
                       message: "Opening help and support center...",
-                    })
-                  }
+                    });
+                    window.open(
+                      "https://www.otpbanka.hr/en/otp-contacts",
+                      "_blank"
+                    );
+                  }}
                 >
                   <HelpCircle className="w-4 h-4 mr-2" />
                   Need Help?
