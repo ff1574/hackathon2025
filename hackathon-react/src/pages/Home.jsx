@@ -64,11 +64,8 @@ function Home({ onNavigate }) {
       >
         <motion.div className="text-center mb-12" variants={itemVariants}>
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
-            Welcome to <span className="text-lime-500">Your App</span>
+            Welcome to <span className="text-lime-500">OTP Bank</span>
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 max-w-2xl">
-            Choose your experience below to get started
-          </p>
         </motion.div>
 
         <motion.div
@@ -78,7 +75,7 @@ function Home({ onNavigate }) {
           <NavigationButton
             icon={Bot}
             title="Chatbot"
-            description="Interact with our AI assistant"
+            description="Our AI assistant"
             onClick={handleChatbotClick}
             variant="primary"
             disabled={isLoading}
@@ -89,7 +86,7 @@ function Home({ onNavigate }) {
             title="Cashback"
             description="Manage your rewards"
             onClick={handleCashbackClick}
-            variant="secondary"
+            variant="primary"
             disabled={isLoading}
           />
         </motion.div>

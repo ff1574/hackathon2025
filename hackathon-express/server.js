@@ -1,46 +1,49 @@
 const express = require("express");
-const { createClient } = require("@supabase/supabase-js");
 const cors = require("cors");
 require("dotenv").config();
+
+// Import routes
+const healthRoutes = require("./src/routes/health");
+const chatRoutes = require("./src/routes/chat");
+const cashbackRoutes = require("./src/routes/cashback");
+const authRoutes = require("./src/routes/auth");
+
+// Import middleware
+const errorHandler = require("./src/middleware/errorHandler");
+const logger = require("./src/middleware/logger");
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Initialize Supabase client
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// Middleware
-app.use(cors({
-  origin: 'http://localhost:3000' // frontend URL
-}));
+// Global middleware
+app.use(
+  cors({
+    origin: true, // Allow all origins for development
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use(logger);
 
-// Test route
+// Routes
+app.use("/api/health", healthRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/cashback", cashbackRoutes);
+app.use("/api/auth", authRoutes);
+
+// Root route
 app.get("/", (req, res) => {
-  res.json({ message: "Express server connected!" });
+  res.json({
+    message: "OTP Bank API Server",
+    version: "1.0.0",
+    endpoints: ["/api/health", "/api/chat", "/api/cashback", "/api/auth"],
+  });
 });
 
-// Example API route
-app.get("/api/test", async (req, res) => {
-  try {
-    // Test Supabase connection
-    const { data, error } = await supabase
-      .from("test_table")
-      .select("*")
-      .limit(1);
-
-    if (error) {
-      return res.status(500).json({ error: "Database connection failed" });
-    }
-
-    res.json({ message: "Backend and Supabase connected successfully", data });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`🚀 Server running on port ${port}`);
+  console.log(`📡 API available at http://localhost:${port}`);
 });
