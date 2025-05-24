@@ -94,7 +94,7 @@ function OffersSection() {
     },
     {
       id: 4,
-      store: "VerbumZadar.",
+      store: "VerbumZadar",
       logo: "📚",
       cashback: "12%",
       category: "books",
