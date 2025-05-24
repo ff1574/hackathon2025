@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { X, CheckCircle, Star, Clock, Info, Sparkles } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 
 function OfferActivationPopup({ offer, isOpen, onClose }) {
-  const [activationStep, setActivationStep] = useState("confirming"); // confirming, activating, success
+  const [activationStep, setActivationStep] = useState("confirming");
   const { addNotification } = useApp();
 
   useEffect(() => {
@@ -16,22 +17,29 @@ function OfferActivationPopup({ offer, isOpen, onClose }) {
     }
   }, [isOpen, offer]);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   const handleActivate = async () => {
     setActivationStep("activating");
-
-    // Simulate activation process
     await new Promise((resolve) => setTimeout(resolve, 2000));
-
     setActivationStep("success");
 
-    // Add success notification
     addNotification({
       type: "success",
       title: "Offer Activated!",
       message: `${offer.store} offer is now active on your account.`,
     });
 
-    // Auto close after success animation
     setTimeout(() => {
       onClose();
     }, 3000);
@@ -99,7 +107,7 @@ function OfferActivationPopup({ offer, isOpen, onClose }) {
 
   if (!offer) return null;
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -107,8 +115,21 @@ function OfferActivationPopup({ offer, isOpen, onClose }) {
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
           onClick={onClose}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            margin: 0,
+            padding: "1rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <motion.div
             variants={modalVariants}
@@ -117,9 +138,9 @@ function OfferActivationPopup({ offer, isOpen, onClose }) {
             exit="exit"
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-md"
+            style={{ maxHeight: "90vh", overflowY: "auto" }}
           >
             <Card className="border-lime-200 shadow-2xl overflow-hidden">
-              {/* Header with gradient */}
               <div className={`h-2 bg-gradient-to-r ${offer.color}`} />
 
               <CardHeader className="relative">
@@ -170,7 +191,6 @@ function OfferActivationPopup({ offer, isOpen, onClose }) {
               </CardHeader>
 
               <CardContent className="space-y-6">
-                {/* Offer Details */}
                 <div className="space-y-3">
                   <p className="text-gray-700">{offer.description}</p>
 
@@ -194,7 +214,6 @@ function OfferActivationPopup({ offer, isOpen, onClose }) {
                   </div>
                 </div>
 
-                {/* Activation States */}
                 <AnimatePresence mode="wait">
                   {activationStep === "confirming" && (
                     <motion.div
@@ -270,7 +289,6 @@ function OfferActivationPopup({ offer, isOpen, onClose }) {
                       animate={{ opacity: 1 }}
                       className="text-center py-8 relative"
                     >
-                      {/* Success Animation */}
                       <motion.div
                         variants={successVariants}
                         initial="hidden"
@@ -285,7 +303,6 @@ function OfferActivationPopup({ offer, isOpen, onClose }) {
                           <CheckCircle className="w-8 h-8 text-lime-600" />
                         </motion.div>
 
-                        {/* Sparkles */}
                         {[...Array(6)].map((_, i) => (
                           <motion.div
                             key={i}
@@ -329,6 +346,10 @@ function OfferActivationPopup({ offer, isOpen, onClose }) {
       )}
     </AnimatePresence>
   );
+
+  return typeof document !== "undefined"
+    ? createPortal(modalContent, document.body)
+    : null;
 }
 
 export default OfferActivationPopup;

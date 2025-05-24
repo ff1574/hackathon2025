@@ -71,7 +71,7 @@ export default function ChatInterface() {
 
         <Card className="flex flex-col h-[32rem] shadow-xl border-2 border-lime-200 rounded-2xl overflow-hidden">
           {/* Header */}
-          <div className="flex items-center gap-4 px-6 py-4 bg-gradient-to-r from-lime-50 to-green-50 rounded-t-2xl border-b">
+          <div className="flex items-center gap-4 px-6 py-4 bg-gradient-to-r from-lime-50 to-green-50 rounded-t-2xl border-b -mt-6">
             <div className="relative">
               <img
                 src="/OTPbankalogo.png"

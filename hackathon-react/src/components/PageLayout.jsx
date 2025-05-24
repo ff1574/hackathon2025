@@ -25,7 +25,9 @@ function PageLayout({ children, className = "" }) {
       initial="initial"
       animate="animate"
       exit="exit"
+      // Keep min-h-screen here but ensure it doesn't create stacking context issues
       className={`min-h-screen bg-white ${className}`}
+      style={{ position: "relative", zIndex: 1 }}
     >
       {children}
     </motion.div>

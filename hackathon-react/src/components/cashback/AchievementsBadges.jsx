@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import {
   Trophy,
   Star,
@@ -14,6 +16,8 @@ import {
   Calendar,
   CheckCircle,
   X,
+  Lock,
+  Users,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 
@@ -21,6 +25,18 @@ function AchievementsBadges({ data }) {
   const [selectedAchievement, setSelectedAchievement] = useState(null);
   const { storesVisited, totalRedemptions, activatedOffers, referralStats } =
     useApp();
+
+  useEffect(() => {
+    if (selectedAchievement) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [selectedAchievement]);
 
   const achievements = [
     {
@@ -33,6 +49,9 @@ function AchievementsBadges({ data }) {
       color: "text-yellow-500",
       bgColor: "bg-yellow-100",
       celebration: "🌟 Welcome to the cashback world!",
+      progress: 100,
+      target: 1,
+      current: 1,
     },
     {
       id: 2,
@@ -60,431 +79,255 @@ function AchievementsBadges({ data }) {
       current: data.totalEarned,
       color: "text-purple-500",
       bgColor: "bg-purple-100",
-      celebration: "👑 You're royalty in the spending kingdom!",
+      celebration: "👑 You're cashback royalty!",
     },
     {
       id: 4,
-      title: "Cashback King",
-      description: "Earned 100€+ in cashback",
-      icon: Trophy,
-      earned: data.availableBalance >= 100,
-      earnedDate: data.availableBalance >= 100 ? "2024-01-20" : null,
-      progress: Math.min((data.availableBalance / 100) * 100, 100),
-      target: 100,
-      current: data.availableBalance,
-      color: "text-lime-500",
-      bgColor: "bg-lime-100",
-      celebration: "🏆 You've mastered the art of cashback!",
-    },
-    {
-      id: 5,
-      title: "Explorer",
-      description: "Shopped at 10+ different stores",
+      title: "Store Explorer",
+      description: "Shop at 10+ different stores",
       icon: Target,
       earned: storesVisited >= 10,
-      earnedDate: storesVisited >= 10 ? "2024-01-25" : null,
+      earnedDate: storesVisited >= 10 ? "2024-01-20" : null,
       progress: Math.min((storesVisited / 10) * 100, 100),
       target: 10,
       current: storesVisited,
       color: "text-blue-500",
       bgColor: "bg-blue-100",
-      celebration: "🗺️ You're a true shopping explorer!",
+      celebration: "🎯 Master explorer of deals!",
     },
     {
-      id: 6,
+      id: 5,
       title: "Referral Champion",
-      description: "Referred 5 friends",
-      icon: Gift,
+      description: "Refer 5+ friends",
+      icon: Users,
       earned: referralStats.totalReferred >= 5,
-      earnedDate: referralStats.totalReferred >= 5 ? "2024-01-30" : null,
+      earnedDate: referralStats.totalReferred >= 5 ? "2024-01-25" : null,
       progress: Math.min((referralStats.totalReferred / 5) * 100, 100),
       target: 5,
       current: referralStats.totalReferred,
-      color: "text-pink-500",
-      bgColor: "bg-pink-100",
-      celebration: "🎁 You're spreading the cashback love!",
-    },
-    {
-      id: 7,
-      title: "Offer Collector",
-      description: "Activated 15+ offers",
-      icon: CheckCircle,
-      earned: activatedOffers.length >= 15,
-      earnedDate: activatedOffers.length >= 15 ? "2024-02-01" : null,
-      progress: Math.min((activatedOffers.length / 15) * 100, 100),
-      target: 15,
-      current: activatedOffers.length,
       color: "text-green-500",
       bgColor: "bg-green-100",
-      celebration: "✅ You're an offer collecting master!",
+      celebration: "🤝 Sharing is caring champion!",
     },
     {
-      id: 8,
-      title: "Redemption Pro",
-      description: "Redeemed rewards 10+ times",
-      icon: TrendingUp,
+      id: 6,
+      title: "Redemption Master",
+      description: "Redeem rewards 10+ times",
+      icon: Gift,
       earned: totalRedemptions >= 10,
-      earnedDate: totalRedemptions >= 10 ? "2024-02-05" : null,
+      earnedDate: totalRedemptions >= 10 ? "2024-02-01" : null,
       progress: Math.min((totalRedemptions / 10) * 100, 100),
       target: 10,
       current: totalRedemptions,
-      color: "text-indigo-500",
-      bgColor: "bg-indigo-100",
-      celebration: "💰 You know how to cash in on rewards!",
+      color: "text-pink-500",
+      bgColor: "bg-pink-100",
+      celebration: "🎁 Reward redemption expert!",
     },
   ];
 
-  const milestones = [
-    {
-      title: "Total Earned",
-      current: data.totalEarned,
-      target: 3000,
-      unit: "€",
-      color: "lime",
-    },
-    {
-      title: "Stores Visited",
-      current: storesVisited,
-      target: 15,
-      unit: "",
-      color: "blue",
-    },
-    {
-      title: "Streak Days",
-      current: data.streakDays,
-      target: 30,
-      unit: "",
-      color: "orange",
-    },
-    {
-      title: "Active Offers",
-      current: activatedOffers.length,
-      target: 20,
-      unit: "",
-      color: "green",
-    },
-  ];
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
+  const modalVariants = {
+    hidden: { opacity: 0, scale: 0.8, y: 50 },
     visible: {
       opacity: 1,
-      transition: {
-        delayChildren: 0.1,
-        staggerChildren: 0.05,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
+      scale: 1,
       y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-      },
+      transition: { type: "spring", stiffness: 300, damping: 25 },
     },
+    exit: { opacity: 0, scale: 0.8, y: 50 },
   };
 
-  const handleAchievementClick = (achievement) => {
-    setSelectedAchievement(achievement);
-  };
-
-  const closeAchievementModal = () => {
-    setSelectedAchievement(null);
-  };
-
-  return (
-    <>
+  const modalContent = selectedAchievement && (
+    <AnimatePresence>
       <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="space-y-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+        onClick={() => setSelectedAchievement(null)}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 9999,
+          margin: 0,
+          padding: "1rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        {/* Milestones Progress */}
-        <motion.div variants={itemVariants}>
-          <Card className="border-lime-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-lime-600" />
-                Progress Milestones
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {milestones.map((milestone, index) => {
-                const progress = (milestone.current / milestone.target) * 100;
-                return (
-                  <div key={index} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">{milestone.title}</span>
-                      <span className="text-sm text-gray-600">
-                        {milestone.unit}
-                        {milestone.current} / {milestone.unit}
-                        {milestone.target}
-                      </span>
-                    </div>
-                    <Progress value={progress} className="h-2" />
-                  </div>
-                );
-              })}
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Achievements Grid */}
-        <motion.div variants={itemVariants}>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Trophy className="w-6 h-6 text-lime-500" />
-            Achievements
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {achievements.map((achievement, index) => (
-              <motion.div
-                key={achievement.id}
-                variants={itemVariants}
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className="group cursor-pointer"
-                onClick={() => handleAchievementClick(achievement)}
+        <motion.div
+          variants={modalVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          onClick={(e) => e.stopPropagation()}
+          className="w-full max-w-md"
+          style={{ maxHeight: "90vh", overflowY: "auto" }}
+        >
+          <Card className="border-lime-200 shadow-2xl overflow-hidden">
+            <CardHeader className="relative text-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedAchievement(null)}
+                className="absolute top-2 right-2 h-8 w-8 p-0"
               >
-                <Card
-                  className={`border-2 transition-all duration-300 ${
-                    achievement.earned
-                      ? "border-lime-300 bg-lime-50 shadow-md hover:shadow-lg"
-                      : "border-gray-200 hover:border-lime-200 hover:shadow-md"
-                  }`}
-                >
-                  <CardContent className="p-6 text-center space-y-4">
-                    <motion.div
-                      className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center ${
-                        achievement.earned ? achievement.bgColor : "bg-gray-100"
-                      } group-hover:scale-110 transition-transform duration-300`}
-                      whileHover={{
-                        rotate: achievement.earned ? [0, -10, 10, 0] : 0,
-                      }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <achievement.icon
-                        className={`w-8 h-8 ${
-                          achievement.earned
-                            ? achievement.color
-                            : "text-gray-400"
-                        }`}
-                      />
-                    </motion.div>
+                <X className="w-4 h-4" />
+              </Button>
 
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">
-                        {achievement.title}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {achievement.description}
-                      </p>
-                    </div>
-
-                    {achievement.earned ? (
-                      <div className="space-y-2">
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 400 }}
-                        >
-                          <Badge className="bg-lime-100 text-lime-800">
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                            Earned
-                          </Badge>
-                        </motion.div>
-                        <div className="flex items-center justify-center gap-1 text-xs text-gray-500">
-                          <Calendar className="w-3 h-3" />
-                          {achievement.earnedDate}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <div className="text-sm text-gray-600">
-                          {achievement.current} / {achievement.target}
-                        </div>
-                        <Progress
-                          value={achievement.progress}
-                          className="h-2"
-                        />
-                        <Badge variant="outline" className="border-gray-300">
-                          {achievement.progress.toFixed(0)}% Complete
-                        </Badge>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Achievement Stats */}
-        <motion.div variants={itemVariants}>
-          <Card className="border-lime-200 bg-gradient-to-br from-lime-50 to-white">
-            <CardContent className="p-6">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-lime-600">
-                    {achievements.filter((a) => a.earned).length}
-                  </div>
-                  <div className="text-sm text-gray-600">Earned</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-orange-600">
-                    {achievements.filter((a) => !a.earned).length}
-                  </div>
-                  <div className="text-sm text-gray-600">In Progress</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-600">
-                    {Math.round(
-                      (achievements.filter((a) => a.earned).length /
-                        achievements.length) *
-                        100
-                    )}
-                    %
-                  </div>
-                  <div className="text-sm text-gray-600">Completion</div>
-                </div>
+              <div
+                className={`w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center ${
+                  selectedAchievement.earned
+                    ? selectedAchievement.bgColor
+                    : "bg-gray-200"
+                }`}
+              >
+                {selectedAchievement.earned ? (
+                  <selectedAchievement.icon
+                    className={`w-10 h-10 ${selectedAchievement.color}`}
+                  />
+                ) : (
+                  <Lock className="w-10 h-10 text-gray-400" />
+                )}
               </div>
+
+              <CardTitle className="text-xl mb-2">
+                {selectedAchievement.title}
+              </CardTitle>
+              <p className="text-gray-600 text-sm">
+                {selectedAchievement.description}
+              </p>
+            </CardHeader>
+
+            <CardContent className="space-y-6">
+              {selectedAchievement.earned ? (
+                <div className="text-center">
+                  <div className="bg-gradient-to-r from-lime-50 to-green-50 border border-lime-200 rounded-lg p-4 mb-4">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                    </motion.div>
+                    <p className="font-medium text-green-800 mb-1">
+                      Achievement Unlocked!
+                    </p>
+                    <p className="text-sm text-green-700">
+                      {selectedAchievement.celebration}
+                    </p>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800">
+                    Earned on {selectedAchievement.earnedDate}
+                  </Badge>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-gray-900 mb-2">
+                      {selectedAchievement.progress.toFixed(0)}% Complete
+                    </div>
+                    <Progress
+                      value={selectedAchievement.progress}
+                      className="h-3 w-full mb-2"
+                    />
+                    <p className="text-sm text-gray-600">
+                      {selectedAchievement.current} of{" "}
+                      {selectedAchievement.target} completed
+                    </p>
+                  </div>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-blue-800">
+                      Keep going! You need{" "}
+                      {selectedAchievement.target - selectedAchievement.current}{" "}
+                      more to unlock this achievement.
+                    </p>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
       </motion.div>
+    </AnimatePresence>
+  );
 
-      {/* Achievement Detail Modal */}
-      <AnimatePresence>
-        {selectedAchievement && (
+  return (
+    <>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        {achievements.map((achievement) => (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={closeAchievementModal}
+            key={achievement.id}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="cursor-pointer"
+            onClick={() => setSelectedAchievement(achievement)}
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: 50 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8, y: 50 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md"
+            <Card
+              className={`relative overflow-hidden border-2 transition-all duration-300 ${
+                achievement.earned
+                  ? "border-lime-300 bg-gradient-to-br from-lime-50 to-green-50"
+                  : "border-gray-200 bg-gray-50"
+              }`}
             >
-              <Card className="border-lime-200 shadow-2xl overflow-hidden">
+              <CardContent className="p-4 text-center">
                 <div
-                  className={`h-2 bg-gradient-to-r ${
-                    selectedAchievement.earned
-                      ? "from-lime-400 to-green-500"
-                      : "from-gray-300 to-gray-400"
+                  className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center ${
+                    achievement.earned ? achievement.bgColor : "bg-gray-200"
                   }`}
-                />
-
-                <CardHeader className="relative text-center">
-                  <button
-                    onClick={closeAchievementModal}
-                    className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-
-                  <motion.div
-                    className={`mx-auto w-20 h-20 rounded-full flex items-center justify-center mb-4 ${
-                      selectedAchievement.earned
-                        ? selectedAchievement.bgColor
-                        : "bg-gray-100"
-                    }`}
-                    animate={
-                      selectedAchievement.earned
-                        ? {
-                            scale: [1, 1.1, 1],
-                            rotate: [0, -5, 5, 0],
-                          }
-                        : {}
-                    }
-                    transition={{ duration: 0.6, repeat: 2 }}
-                  >
-                    <selectedAchievement.icon
-                      className={`w-10 h-10 ${
-                        selectedAchievement.earned
-                          ? selectedAchievement.color
-                          : "text-gray-400"
-                      }`}
+                >
+                  {achievement.earned ? (
+                    <achievement.icon
+                      className={`w-6 h-6 ${achievement.color}`}
                     />
-                  </motion.div>
-
-                  <CardTitle className="text-xl mb-2">
-                    {selectedAchievement.title}
-                  </CardTitle>
-                  <p className="text-gray-600">
-                    {selectedAchievement.description}
-                  </p>
-                </CardHeader>
-
-                <CardContent className="space-y-6">
-                  {selectedAchievement.earned ? (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-center"
-                    >
-                      <motion.div
-                        className="text-4xl mb-3"
-                        animate={{ rotate: [0, 10, -10, 0] }}
-                        transition={{ duration: 0.5, repeat: 3 }}
-                      >
-                        🎉
-                      </motion.div>
-                      <h3 className="font-bold text-lg text-green-600 mb-2">
-                        Achievement Unlocked!
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        {selectedAchievement.celebration}
-                      </p>
-                      <Badge className="bg-green-100 text-green-800 px-4 py-2">
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        Completed on {selectedAchievement.earnedDate}
-                      </Badge>
-                    </motion.div>
                   ) : (
-                    <div className="space-y-4">
-                      <div className="text-center">
-                        <h3 className="font-semibold text-gray-900 mb-2">
-                          Progress
-                        </h3>
-                        <div className="text-2xl font-bold text-lime-600 mb-1">
-                          {selectedAchievement.current} /{" "}
-                          {selectedAchievement.target}
-                        </div>
-                        <Progress
-                          value={selectedAchievement.progress}
-                          className="h-3 mb-2"
-                        />
-                        <p className="text-sm text-gray-600">
-                          {selectedAchievement.progress.toFixed(0)}% Complete
-                        </p>
-                      </div>
-
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                        <p className="text-sm text-blue-700">
-                          Keep going! You need{" "}
-                          {selectedAchievement.target -
-                            selectedAchievement.current}{" "}
-                          more to unlock this achievement.
-                        </p>
-                      </div>
-                    </div>
+                    <Lock className="w-6 h-6 text-gray-400" />
                   )}
-                </CardContent>
-              </Card>
-            </motion.div>
+                </div>
+                <h3 className="font-medium text-sm mb-1">
+                  {achievement.title}
+                </h3>
+                <p className="text-xs text-gray-600 mb-2">
+                  {achievement.description}
+                </p>
+                {achievement.earned ? (
+                  <Badge className="bg-green-100 text-green-800 text-xs">
+                    ✓ Earned
+                  </Badge>
+                ) : (
+                  <div className="space-y-1">
+                    <Progress
+                      value={achievement.progress}
+                      className="h-2 w-full"
+                    />
+                    <div className="text-xs text-gray-500">
+                      {achievement.current}/{achievement.target}
+                    </div>
+                  </div>
+                )}
+                {achievement.earned && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute top-2 right-2"
+                  >
+                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    </div>
+                  </motion.div>
+                )}
+              </CardContent>
+            </Card>
           </motion.div>
-        )}
-      </AnimatePresence>
+        ))}
+      </div>
+
+      {selectedAchievement && typeof document !== "undefined"
+        ? createPortal(modalContent, document.body)
+        : null}
     </>
   );
 }

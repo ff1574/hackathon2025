@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,18 @@ function RedeemRewardsModal({ isOpen, onClose }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { addNotification, availableBalance, redeemRewards } = useApp();
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
 
   const redeemMethods = [
     {
@@ -77,12 +90,8 @@ function RedeemRewardsModal({ isOpen, onClose }) {
     }
 
     setIsProcessing(true);
-
-    // Simulate processing
     await new Promise((resolve) => setTimeout(resolve, 3000));
-
     const success = redeemRewards(Number.parseFloat(amount), selectedMethod);
-
     setIsProcessing(false);
 
     if (success) {
@@ -114,15 +123,28 @@ function RedeemRewardsModal({ isOpen, onClose }) {
     exit: { opacity: 0, scale: 0.8, y: 50 },
   };
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
           onClick={onClose}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            margin: 0,
+            padding: "1rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <motion.div
             variants={modalVariants}
@@ -131,6 +153,7 @@ function RedeemRewardsModal({ isOpen, onClose }) {
             exit="exit"
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-lg"
+            style={{ maxHeight: "90vh", overflowY: "auto" }}
           >
             <Card className="border-lime-200 shadow-2xl">
               <CardHeader className="relative">
@@ -166,7 +189,6 @@ function RedeemRewardsModal({ isOpen, onClose }) {
                       exit={{ opacity: 0 }}
                       className="space-y-6"
                     >
-                      {/* Redemption Methods */}
                       <div>
                         <h3 className="font-medium mb-3">
                           Choose redemption method:
@@ -218,7 +240,6 @@ function RedeemRewardsModal({ isOpen, onClose }) {
                         </div>
                       </div>
 
-                      {/* Amount Input */}
                       <div>
                         <label className="block text-sm font-medium mb-2">
                           Amount to redeem:
@@ -252,7 +273,6 @@ function RedeemRewardsModal({ isOpen, onClose }) {
                         </div>
                       </div>
 
-                      {/* Quick Amount Buttons */}
                       <div className="flex gap-2">
                         {[25, 50, 100].map((quickAmount) => (
                           <Button
@@ -276,7 +296,6 @@ function RedeemRewardsModal({ isOpen, onClose }) {
                         </Button>
                       </div>
 
-                      {/* Action Buttons */}
                       <div className="flex gap-3">
                         <Button
                           variant="outline"
@@ -360,6 +379,10 @@ function RedeemRewardsModal({ isOpen, onClose }) {
       )}
     </AnimatePresence>
   );
+
+  return typeof document !== "undefined"
+    ? createPortal(modalContent, document.body)
+    : null;
 }
 
 export default RedeemRewardsModal;

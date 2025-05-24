@@ -4,7 +4,6 @@ import Home from "./pages/Home";
 import ChatbotPage from "./pages/ChatbotPage";
 import CashbackPage from "./pages/CashbackPage";
 import { AppProvider } from "./context/AppContext";
-import ConnectionStatus from "./components/ConnectionStatus";
 import NotificationToast from "./components/NotificationToast";
 
 function App() {
@@ -38,7 +37,6 @@ function App() {
   return (
     <AppProvider>
       <div className="min-h-screen bg-white">
-        <ConnectionStatus />
         <NotificationToast />
         <AnimatePresence mode="wait">
           <motion.div
@@ -48,7 +46,9 @@ function App() {
             exit="out"
             variants={pageVariants}
             transition={pageTransition}
-            className="min-h-screen"
+            // Remove min-h-screen from here - this was causing the stacking context issue
+            className="w-full"
+            style={{ position: "relative" }}
           >
             {renderPage()}
           </motion.div>

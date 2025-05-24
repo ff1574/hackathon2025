@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,18 @@ function ReferFriendsModal({ isOpen, onClose }) {
   const [isSending, setIsSending] = useState(false);
   const [sentEmails, setSentEmails] = useState([]);
   const { addNotification, referralStats, referFriend } = useApp();
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
 
   const shareOptions = [
     {
@@ -108,10 +121,7 @@ function ReferFriendsModal({ isOpen, onClose }) {
     }
 
     setIsSending(true);
-
-    // Simulate sending email
     await new Promise((resolve) => setTimeout(resolve, 2000));
-
     referFriend(email);
     setSentEmails([...sentEmails, email]);
     setEmail("");
@@ -135,15 +145,28 @@ function ReferFriendsModal({ isOpen, onClose }) {
     exit: { opacity: 0, scale: 0.8, y: 50 },
   };
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
           onClick={onClose}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            margin: 0,
+            padding: "1rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <motion.div
             variants={modalVariants}
@@ -151,7 +174,8 @@ function ReferFriendsModal({ isOpen, onClose }) {
             animate="visible"
             exit="exit"
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-lg"
+            style={{ maxHeight: "90vh", overflowY: "auto" }}
           >
             <Card className="border-lime-200 shadow-2xl">
               <CardHeader className="relative">
@@ -174,7 +198,6 @@ function ReferFriendsModal({ isOpen, onClose }) {
               </CardHeader>
 
               <CardContent className="space-y-6">
-                {/* Referral Stats */}
                 <div className="grid grid-cols-2 gap-4">
                   <Card className="border-lime-200 bg-lime-50">
                     <CardContent className="p-4 text-center">
@@ -196,7 +219,6 @@ function ReferFriendsModal({ isOpen, onClose }) {
                   </Card>
                 </div>
 
-                {/* Referral Code */}
                 <div className="bg-gray-50 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
@@ -224,7 +246,6 @@ function ReferFriendsModal({ isOpen, onClose }) {
                   </div>
                 </div>
 
-                {/* Share Options */}
                 <div>
                   <h3 className="font-medium mb-3">Share your referral:</h3>
                   <div className="grid grid-cols-2 gap-3">
@@ -253,7 +274,6 @@ function ReferFriendsModal({ isOpen, onClose }) {
                   </div>
                 </div>
 
-                {/* Email Invitation */}
                 <div>
                   <h3 className="font-medium mb-3">Send direct invitation:</h3>
                   <div className="flex gap-2">
@@ -289,7 +309,6 @@ function ReferFriendsModal({ isOpen, onClose }) {
                   </div>
                 </div>
 
-                {/* Recent Invitations */}
                 {sentEmails.length > 0 && (
                   <div>
                     <h3 className="font-medium mb-3">Recent invitations:</h3>
@@ -309,7 +328,6 @@ function ReferFriendsModal({ isOpen, onClose }) {
                   </div>
                 )}
 
-                {/* Bonus Info */}
                 <div className="bg-gradient-to-r from-lime-50 to-green-50 border border-lime-200 rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Gift className="w-5 h-5 text-lime-600" />
@@ -330,6 +348,10 @@ function ReferFriendsModal({ isOpen, onClose }) {
       )}
     </AnimatePresence>
   );
+
+  return typeof document !== "undefined"
+    ? createPortal(modalContent, document.body)
+    : null;
 }
 
 export default ReferFriendsModal;
